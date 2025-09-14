@@ -3,47 +3,44 @@ name: Versionamento Automático HTML/CSS
 on:
   push:
     branches:
-      - main   # Troque para a branch que você quer monitorar
+      - main
 
 jobs:
   bump-tag:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Faz checkout do código
+      # 1️⃣ Checkout
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      # 2️⃣ Configura Git para commits feitos pelo Actions
+      # 2️⃣ Configurar Git com seu usuário e email
       - name: Configurar Git
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "Vanessa-Nobrega"
+          git config user.email "vanessacapuano1@gmail.com"
 
-      # 3️⃣ Obter a maior tag existente >= v1.0.0
+      # 3️⃣ Obter a maior tag existente
       - name: Obter maior tag existente
         id: get_tag
         run: |
-          # Lista todas as tags que começam com v e são >= v1.0.0
-          TAGS=$(git tag --list 'v*' | grep -E '^v[1-9][0-9]*\.[0-9]+\.[0-9]+$' | sed 's/v//')
+          TAGS=$(git tag --list 'v*' | sed 's/v//')
           if [ -z "$TAGS" ]; then
-            LAST_TAG="v1.0.0"
+            LAST_TAG="v0.0.0"
           else
-            # Ordena numericamente e pega a maior
             LAST_TAG=$(echo "$TAGS" | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
             LAST_TAG="v$LAST_TAG"
           fi
           echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
           echo "Última tag encontrada: $LAST_TAG"
 
-      # 4️⃣ Calcular nova tag sem sobrescrever tags existentes
+      # 4️⃣ Calcular nova tag
       - name: Calcular nova tag
         id: calc_tag
         run: |
           IFS='.' read -r MAJOR MINOR PATCH <<< "${LAST_TAG#v}"
           PATCH=$((PATCH + 1))
           NEW_TAG="v$MAJOR.$MINOR.$PATCH"
-          # Garante que a tag seja única
           while git rev-parse "$NEW_TAG" >/dev/null 2>&1; do
             PATCH=$((PATCH + 1))
             NEW_TAG="v$MAJOR.$MINOR.$PATCH"
@@ -51,8 +48,10 @@ jobs:
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
           echo "Nova tag a ser criada: $NEW_TAG"
 
-      # 5️⃣ Criar tag e push usando token interno do Actions
+      # 5️⃣ Criar tag e push usando GH_TOKEN
       - name: Criar tag no GitHub
         run: |
           git tag $NEW_TAG
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} $NEW_TAG
+          git push https://Vanessa-Nobrega:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }} $NEW_TAG
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
