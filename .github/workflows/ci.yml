@@ -20,14 +20,22 @@ jobs:
           git config user.name "Seu Nome"   # Coloque seu nome
           git config user.email "seu-email@github.com" # Coloque seu email
 
-      # 3️⃣ Obter última tag
-      - name: Obter última tag
+      # 3️⃣ Obter a maior tag existente
+      - name: Obter maior tag existente
         id: get_tag
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          TAGS=$(git tag --list 'v*' | sed 's/v//')
+          if [ -z "$TAGS" ]; then
+            LAST_TAG="v0.0.0"
+          else
+            # Ordena as tags numericamente e pega a maior
+            LAST_TAG=$(echo "$TAGS" | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
+            LAST_TAG="v$LAST_TAG"
+          fi
           echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
+          echo "Última tag encontrada: $LAST_TAG"
 
-      # 4️⃣ Calcular nova tag sem repetir tags existentes
+      # 4️⃣ Calcular nova tag sem sobrescrever tags existentes
       - name: Calcular nova tag
         id: calc_tag
         run: |
@@ -40,7 +48,7 @@ jobs:
             NEW_TAG="v$MAJOR.$MINOR.$PATCH"
           done
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-          echo "Nova tag: $NEW_TAG"
+          echo "Nova tag a ser criada: $NEW_TAG"
 
       # 5️⃣ Criar tag e push usando seu token GH_TOKEN
       - name: Criar tag no GitHub
