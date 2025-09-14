@@ -3,27 +3,31 @@ name: Versionamento Automático HTML/CSS
 on:
   push:
     branches:
-      - main
+      - main   # Troque para a branch que você quer monitorar
 
 jobs:
   bump-tag:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Faz checkout do código
       - name: Checkout do código
         uses: actions/checkout@v4
 
+      # 2️⃣ Configura Git para commits feitos pelo Actions
       - name: Configurar Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      # 3️⃣ Obter última tag
       - name: Obter última tag
         id: get_tag
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
           echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
 
+      # 4️⃣ Calcular nova tag (incrementa patch automaticamente)
       - name: Calcular nova tag
         id: calc_tag
         run: |
@@ -33,10 +37,8 @@ jobs:
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
           echo "Nova tag: $NEW_TAG"
 
-      - name: Criar tag no Git
+      # 5️⃣ Criar tag e push usando token interno do Actions
+      - name: Criar tag no GitHub
         run: |
           git tag $NEW_TAG
-          git push https://$GH_TOKEN@github.com/${{ github.repository }} $NEW_TAG
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} $NEW_TAG
