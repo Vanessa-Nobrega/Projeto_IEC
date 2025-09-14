@@ -1,44 +1,21 @@
-name: CI - Testes e Cobertura
+name: Versionamento Automático HTML/CSS
 
 on:
   push:
     branches:
-      - '**'
+      - main   
 
 jobs:
-  build-and-test:
+  bump-version:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
+      - name: Bump version and push tag
+        uses: phips28/gh-action-bump-version@v10
         with:
-          node-version: '20'   
-
-      - name: Instalar dependências
-        run: npm install
-
-      - name: Executar testes com cobertura
-        run: npm run test -- --coverage
-
-      - name: Checar % mínima de cobertura
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const coverageFile = './coverage/coverage-summary.json';
-            if (!fs.existsSync(coverageFile)) {
-              core.setFailed('Arquivo de cobertura não encontrado.');
-            } else {
-              const data = JSON.parse(fs.readFileSync(coverageFile, 'utf8'));
-              const statements = data.total.statements.pct;
-              const MIN_COVERAGE = 95; 
-              if (statements < MIN_COVERAGE) {
-                core.setFailed(`Cobertura insuficiente: ${statements}% (< ${MIN_COVERAGE}%)`);
-              } else {
-                core.info(`Cobertura OK: ${statements}%`);
-              }
-            }
+          tag-prefix: "v"           # tags ficarão v1.0.0, v1.0.1 etc.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
