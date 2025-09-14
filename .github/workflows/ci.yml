@@ -27,17 +27,22 @@ jobs:
           LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
           echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
 
-      # 4️⃣ Calcular nova tag (incrementa patch automaticamente)
+      # 4️⃣ Calcular nova tag sem repetir tags existentes
       - name: Calcular nova tag
         id: calc_tag
         run: |
           IFS='.' read -r MAJOR MINOR PATCH <<< "${LAST_TAG#v}"
           PATCH=$((PATCH + 1))
           NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          # Garante que a tag seja única
+          while git rev-parse "$NEW_TAG" >/dev/null 2>&1; do
+            PATCH=$((PATCH + 1))
+            NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          done
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
           echo "Nova tag: $NEW_TAG"
 
-      # 5️⃣ Criar tag e push usando token interno do Actions
+      # 5️⃣ Criar tag e push seguro usando token do Actions
       - name: Criar tag no GitHub
         run: |
           git tag $NEW_TAG
