@@ -36,6 +36,7 @@ jobs:
       - name: Criar tag no Git
         run: |
           git tag $NEW_TAG
-          git push origin $NEW_TAG
+          git push https://$GH_TOKEN@github.com/${{ github.repository }} $NEW_TAG
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
