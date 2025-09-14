@@ -18,4 +18,4 @@ jobs:
         with:
           tag-prefix: "v"           # tags ficarão v1.0.0, v1.0.1 etc.
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
