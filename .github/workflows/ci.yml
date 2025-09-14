@@ -3,10 +3,7 @@ name: CI - Testes e Cobertura
 on:
   push:
     branches:
-      - development    # <<< altere aqui a branch que dispara a pipeline
-  pull_request:
-    branches:
-      - development    # <<< altere aqui também se quiser PRs
+      - '**'
 
 jobs:
   build-and-test:
