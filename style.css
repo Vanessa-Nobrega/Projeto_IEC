@@ -14,7 +14,7 @@ body {
 
 /* Header e nav */
 header {
-  background: #4a90e2;
+  background: #e0438a;
   color: #fff;
   padding: 1rem 0;
 }
@@ -60,7 +60,7 @@ nav ul li a {
 }
 
 .btn {
-  background: #4a90e2;
+  background: #e0438a;
   color: #fff;
   padding: 0.75rem 1.5rem;
   border-radius: 5px;
@@ -75,7 +75,7 @@ nav ul li a {
 }
 
 .content h2 {
-  color: #4a90e2;
+  color: #e0438a;
   margin-bottom: 1rem;
 }
 
@@ -95,6 +95,6 @@ nav ul li a {
 footer {
   text-align: center;
   padding: 1rem;
-  background: #4a90e2;
+  background: #e0438a;
   color: #fff;
 }
