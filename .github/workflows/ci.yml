@@ -17,8 +17,8 @@ jobs:
       # 2️⃣ Configura Git para commits feitos pelo Actions
       - name: Configurar Git
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "Seu Nome"   # Coloque seu nome
+          git config user.email "seu-email@github.com" # Coloque seu email
 
       # 3️⃣ Obter última tag
       - name: Obter última tag
@@ -42,8 +42,10 @@ jobs:
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
           echo "Nova tag: $NEW_TAG"
 
-      # 5️⃣ Criar tag e push seguro usando token do Actions
+      # 5️⃣ Criar tag e push usando seu token GH_TOKEN
       - name: Criar tag no GitHub
         run: |
           git tag $NEW_TAG
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} $NEW_TAG
+          git push https://$GH_TOKEN@github.com/${{ github.repository }} $NEW_TAG
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
